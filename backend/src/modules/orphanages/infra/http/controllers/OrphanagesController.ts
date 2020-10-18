@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { container } from 'tsyringe';
+import { classToClass } from 'class-transformer';
 
 import CreateOrphanageService from '@modules/orphanages/services/CreateOrphanageService';
 import ListOrphanagesService from '@modules/orphanages/services/ListOrphanagesService';
@@ -9,6 +10,8 @@ import ListOrphanageService from '@modules/orphanages/services/ListOrphanageServ
 export default class OrphanagesController {
 
   public async create(request:Request, response:Response): Promise<Response>{
+
+
 
       const {
          name,
@@ -20,7 +23,15 @@ export default class OrphanagesController {
          open_on_weekends,
       } = request.body;
 
+      const requestImages = request.files as Express.Multer.File[];
+
       const createOrphanage = container.resolve(CreateOrphanageService);
+
+
+      const images = requestImages.map(image => {
+        return { path: image.filename }
+      })
+
 
       const orphanage = await createOrphanage.execute({
          name,
@@ -30,6 +41,7 @@ export default class OrphanagesController {
          instructions,
          opening_hours,
          open_on_weekends,
+         images
       });
 
       return response.json(orphanage);
@@ -50,6 +62,6 @@ export default class OrphanagesController {
 
     const orphanage = await listOrpahanage.execute(id);
 
-    return response.json(orphanage);
+    return response.json(classToClass(orphanage));
   }
 }

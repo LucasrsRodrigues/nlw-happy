@@ -1,3 +1,7 @@
+type Images = Array<{
+  path:string;
+}>;
+
 export default interface ICreateOrphanageDTO {
   name: string;
   latitude: number;
@@ -6,4 +10,5 @@ export default interface ICreateOrphanageDTO {
   instructions: string;
   opening_hours: string;
   open_on_weekends: boolean;
+  images: Images
 }

@@ -2,8 +2,10 @@ import { compare } from "bcryptjs";
 import { sign } from 'jsonwebtoken';
 import { inject, injectable } from 'tsyringe';
 
+
 import Users from "../infra/typeorm/entities/Users";
 import IUsersRepository from "../repositories/IUsersRepository";
+import AppError from '@shared/errors/AppError';
 
 interface IRequest {
   email: string;
@@ -26,13 +28,13 @@ class AuthenticateUserService {
     const user = await this.usersRepository.findByEmail(email);
 
     if(!user){
-      throw new Error('Incorrect email/password combination');
+      throw new AppError('Incorrect email/password combination', 401);
     }
 
     const passwordMatched = await compare(password, user.password);
 
     if(!passwordMatched){
-      throw new Error('Incorrect email/password combination');
+      throw new AppError('Incorrect email/password combination', 401);
     }
 
     const token = sign({}, '79a44d9c72e0793c061ac4446f90c46f', {

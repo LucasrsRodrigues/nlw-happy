@@ -1,15 +1,9 @@
 import { inject, injectable } from 'tsyringe';
 import Orphanage from '@modules/orphanages/infra/typeorm/entities/Orphanage';
 import IOrphanageRepository from '@modules/orphanages/repositories/IOrphanageRepository';
-interface IRequest {
-  name: string;
-  latitude: number;
-  longitude: number;
-  about: string;
-  instructions: string;
-  opening_hours: string;
-  open_on_weekends: boolean;
-}
+
+import ICreateOrphanageDTO from '@modules/orphanages/dtos/ICreateOrphanageDTO';
+import AppError from '@shared/errors/AppError';
 
 @injectable()
 class CreateOrphanageService {
@@ -25,12 +19,13 @@ class CreateOrphanageService {
     name,
     open_on_weekends,
     opening_hours,
-  }: IRequest): Promise<Orphanage> {
+    images
+  }: ICreateOrphanageDTO): Promise<Orphanage> {
 
     const checkOrphanageExists = this.orphanageRepository.findByName(name);
 
     if (!checkOrphanageExists) {
-      throw new Error('Orphanage has created');
+      throw new AppError('Orphanage has created');
     }
 
     const orphanage = await this.orphanageRepository.create({
@@ -41,7 +36,9 @@ class CreateOrphanageService {
       name,
       open_on_weekends,
       opening_hours,
+      images,
     });
+
 
     return orphanage;
   }

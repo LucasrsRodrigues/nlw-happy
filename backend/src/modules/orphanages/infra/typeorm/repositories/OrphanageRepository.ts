@@ -28,22 +28,37 @@ class OrphanageRepository implements IOrphanageRepository {
     instructions,
     opening_hours,
     open_on_weekends,
+    images
   }: ICreateOrphanageDTO): Promise<Orphanage>{
-    const orphanage = this.ormRepository.create({name, latitude, longitude, about, instructions, opening_hours,open_on_weekends});
 
+    const orphanage = this.ormRepository.create({
+      name,
+      latitude,
+      longitude,
+      about,
+      instructions,
+      opening_hours,
+      open_on_weekends,
+      images,
+    });
+    console.log(orphanage);
     await this.ormRepository.save(orphanage);
 
     return orphanage;
   };
 
   public async findAllOrphanages(): Promise<Orphanage[]>{
-    const orphanages = this.ormRepository.find();
+    const orphanages = this.ormRepository.find({
+      relations: ['images']
+    });
 
     return orphanages;
   }
 
   public async findOneOrphanage(id: string): Promise<Orphanage>{
-    const orphanage = await this.ormRepository.findOneOrFail(id);
+    const orphanage = await this.ormRepository.findOneOrFail(id, {
+      relations: ['images']
+    });
 
     return orphanage;
   }
